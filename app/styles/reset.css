@@ -1,0 +1,46 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  position: relative;
+}
+html,
+body {
+  height: 100%;
+  font-size: 13px;
+}
+html,
+body,
+header,
+section,
+footer,
+div,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+span,
+strong,
+b,
+i,
+a,
+button,
+nav {
+  display: flex;
+  flex-direction: column;
+}
+a {
+  text-decoration: none;
+  color: #000;
+}
+button {
+  background-color: transparent;
+  border: none;
+  transition: opacity 0.3s ease 0s;
+}
+button:active {
+  opacity: 0.3;
+  transition: opacity 0s ease 0s;
+}
