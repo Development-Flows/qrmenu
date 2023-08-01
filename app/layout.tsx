@@ -1,5 +1,10 @@
 // import "./globals.css";
-import Providers  from "../Providers";
+import "./styles/reset.css";
+import { Plus_Jakarta_Sans } from "next/font/google";
+const plus_Jakarta_Sans = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+});
+import Providers from "../Providers";
 
 export const metadata = {
   title: "Create Next App",
@@ -12,8 +17,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body>
+    <html lang="tr">
+      <body className={plus_Jakarta_Sans.className}>
         <Providers>{children}</Providers>
       </body>
     </html>
