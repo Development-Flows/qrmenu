@@ -1,0 +1,41 @@
+.pageWrapper {
+    background-color: bisque;
+  .header {
+    font-size: 40px;
+    color: chocolate;
+    text-align: center;
+  }
+  .container {
+    padding: 100px 100px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+
+    .tableWrapper {
+      padding: 10px;
+      border: 1px solid rebeccapurple;
+      border-radius: 5px;
+      margin: 20px;
+      .tableName {
+        text-align: center;
+        color: blueviolet;
+      }
+      .tableDesc {
+        text-align: center;
+        color: rosybrown;
+      }
+      .qrCode {
+        width: 100px;
+        height: 100px;
+        margin: 20px;
+      }
+    }
+    .isActiveTrue {
+      border: 8px solid green;
+    }
+    .isActiveFalse {
+      border: 8px solid red;
+    }
+  }
+}
