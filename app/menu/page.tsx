@@ -1,48 +1,34 @@
-"use client"
-import React from "react";
+import React, { FC } from "react";
 import { NextPage } from "next";
-import { categories, products } from "./helpers";
 import styles from "./menu.module.scss";
-import CategoryArea from "./CategoryArea";
+import Header from "@/components/pages/menu/Header";
+import { Response_getAllWithProduct } from "@/service/types";
+import Content from "@/components/pages/menu/Content";
+import Footer from "@/components/pages/menu/Footer";
 
-const Menu: NextPage = () => {
-let prop = "init"
-  const setActiveCategoryHandler = (param) => {
-prop=param
-    return param;
-  };
+const Menu: NextPage = async ({}) => {
+  const categories: Response_getAllWithProduct["data"] = [];
+
+  await fetch("https://qrmenu-service.onrender.com/menu/getAllWithProduct", {
+    next: { revalidate: 10 },
+  })
+    .then(async (res) => await res.json())
+    .then((res: Response_getAllWithProduct) => res.data)
+    .then((res: Response_getAllWithProduct["data"]) => {
+      categories.push(...res);
+    })
+    .catch((err) => {
+      console.log("err", err);
+    });
+
   return (
-    <div className={styles.container}>
-      <div className={styles.products}>
-        <h1>Ürünler</h1>
-        {products.map((pItem, pIndex) => {
-          return (
-            <div
-              onClick={()=>setActiveCategoryHandler(pItem.name)}
-              key={pIndex}
-              className={styles.product}
-            >
-              <div className={styles.productName}>{pItem.name}</div>
-            </div>
-          );
-        })}
+    <>
+      <div className={styles.container}>
+        <Header logoSrc="/vercel.svg" logoAltText="Vercel" />
+        <Content categories={categories} />
+        <Footer />
       </div>
-      <CategoryArea
-      prop={prop}
-        setActiveCategoryHandler={setActiveCategoryHandler}
-      ></CategoryArea>
-      <div className={styles.categories}>
-        <h1>Kategoriler</h1>
-        {categories.map((cItem, cIndex) => {
-          return (
-            <div key={cIndex} className={styles.category}>
-              <div className={styles.categoryName}>{cItem.name}</div>
-            </div>
-          );
-        })}
-      </div>
-    </div>
+    </>
   );
 };
-
 export default Menu;
