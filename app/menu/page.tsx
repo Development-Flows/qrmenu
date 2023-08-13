@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React from "react";
 import { NextPage } from "next";
 import styles from "./menu.module.scss";
 import Header from "@/components/pages/menu/Header";
