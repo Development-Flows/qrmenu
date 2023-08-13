@@ -19,3 +19,46 @@
     }
   }
 }
+
+.productContainer {
+  margin: 10px 15px;
+  width: calc(100% - 30px);
+  flex-direction: row;
+  box-shadow: 0 0 2px #00000020;
+  border-radius:5px;
+  & .productImageContainer {
+    width: 90px;
+    height: 90px;
+    & span {
+      flex: 1;
+      align-items: center;
+      justify-content: center;
+      font-size: 30px;
+      background-color: #f2f2f2;
+      border-radius: 5px;
+      color: #ccc;
+    }
+  }
+  & .productContentContainer {
+    flex:1;
+    padding: 10px 5px 10px 15px;
+    height:100%;
+    text-align: left;
+    & h2 {
+      font-size: 16px;
+    }
+    & p {
+      flex: 1;
+      align-items: flex-start;
+      justify-content: center;
+      font-size: 13px;
+    }
+  }
+  & .productPriceContainer {
+    height: 100%;
+    padding:10px;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+  }
+}
