@@ -1,7 +1,6 @@
 import { generateTableInfos } from "@/lib/helpers";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
-
 const initialState = { 
   loading: false,
   addedLink: {},
@@ -9,7 +8,7 @@ const initialState = {
   deletedLink: {},
   linkList: []
 };
-export const getTableInfos = createAsyncThunk("table/getLinks", async (tableCount) => {
+export const getTableInfos = createAsyncThunk("table/getLinks", async (tableCount:number) => {
   const response = generateTableInfos(tableCount)
   return response;
 });
@@ -25,9 +24,9 @@ const tableLinkSlice = createSlice({
       .addCase(getTableInfos.pending, (state) => {
         state.loading = true;
       })
-      .addCase(getTableInfos.fulfilled, (state, action) => {
+      .addCase(getTableInfos.fulfilled, (state, {payload}) => {
         state.loading = false;
-        state.linkList = action.payload;
+        // state.linkList.push(payload);
       })
       .addCase(getTableInfos.rejected, (state) => {
         state.loading = false;

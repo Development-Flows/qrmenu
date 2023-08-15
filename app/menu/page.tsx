@@ -22,13 +22,13 @@ const Menu: NextPage = async ({}) => {
     });
 
   return (
-    <>
-      <div className={styles.container}>
-        <Header logoSrc="/vercel.svg" logoAltText="Vercel" />
-        <Content categories={categories} />
-        <Footer />
-      </div>
-    </>
+    <div>
+
+
+        <Content categories={categories} />k
+
+
+    </div>
   );
 };
 export default Menu;

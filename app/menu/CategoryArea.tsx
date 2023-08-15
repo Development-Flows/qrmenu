@@ -1,12 +1,8 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import styles from "./menu.module.scss";
-const CategoryArea = ({ setActiveCategoryHandler,prop }) => {
-  console.log("setActiveCategoryHandler", setActiveCategoryHandler);
-  useEffect(()=>{
-      console.log('değer()', setActiveCategoryHandler())
-      console.log('prop', prop)
-  },[setActiveCategoryHandler])
+const CategoryArea = () => {
+
 
 
   const [activeCategory, setActiveCategory] = useState<string | null>();
