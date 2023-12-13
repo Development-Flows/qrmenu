@@ -15,23 +15,23 @@ const Header: FC<HeaderProps> = ({ logoSrc, logoAltText = "" }) => {
   return (
     <>
       <header className={styles.container}>
-        <button onClick={() => setIsLeftVisible(true)}>
+          {/*<button onClick={() => setIsLeftVisible(true)}>
           <i>☢</i>
-        </button>
+        </button>*/}
 
         <div className={styles.logo}>
           <Image
             src={logoSrc}
-            alt={logoAltText}
+            alt={logoAltText??''}
             className={styles.logo}
             layout="fill"
             objectFit="contain"
           />
         </div>
 
-        <button onClick={() => setIsRightVisible(true)}>
+          {/* <button onClick={() => setIsRightVisible(true)}>
           <i>☠</i>
-        </button>
+        </button>*/}
       </header>
 
       <Modal

@@ -10,7 +10,7 @@ const Menu: NextPage = async ({}) => {
   const categories: Response_getAllWithProduct["data"] = [];
 
   await fetch("https://qrmenu-service.onrender.com/menu/getAllWithProduct", {
-    next: { revalidate: 10 },
+    next: { revalidate: 60 },
   })
     .then(async (res) => await res.json())
     .then((res: Response_getAllWithProduct) => res.data)
