@@ -20,11 +20,7 @@ const Menu: NextPage = async ({}) => {
 
   return (
     <div>
-
-
         <Content categories={categories} />
-
-
     </div>
   );
 };
