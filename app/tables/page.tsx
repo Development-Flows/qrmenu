@@ -10,12 +10,10 @@ import cn from "classnames";
 
 const Tables: NextPage = () => {
   const tables = useAppSelector((state) => state.table.linkList);
-  console.log("tables", tables);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
     dispatch(getTableInfos(30));
-    console.log("test");
   }, []);
 
   return (

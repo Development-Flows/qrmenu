@@ -34,7 +34,6 @@ interface ProductCardProps {
   product: ContentProps["categories"][0]["products"][0];
 }
 const ProductCard: FC<ProductCardProps> = ({ product }) => {
-  console.log("product", product);
   return (
     <button className={styles.productContainer}>
       <div className={styles.productImageContainer}>
