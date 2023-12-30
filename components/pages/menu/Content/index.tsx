@@ -25,7 +25,7 @@ const Content: FC<ContentProps> = ({categories}) => {
                 ))}
             </nav>
             <section className={styles.content}>
-                {categories.find(x => x._id === activeCategory).products.map((product, index) => {
+                {categories?.find(x => x._id === activeCategory)?.products.map((product, index) => {
                     return <ProductCard product={product} key={product._id}/>;
                 })}
             </section>
