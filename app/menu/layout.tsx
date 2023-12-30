@@ -6,9 +6,8 @@ const DynamicHeader = dynamic(() => import("../../components/pages/menu/Header")
 
 export default function MenuLayout  ({children}: { children:React.ReactNode}){
    return <div style={{display:"flex" ,flexDirection:"column",minHeight:"100vh"}}>
-    <DynamicHeader  logoSrc={"/vercel.svg"} logoAltText={"Vercel"} />
-       <main style={{flexGrow:1}}>{children}</main>
-
+      <h1 style={{textAlign:'center',fontWeight:900,padding:'10px 0px'}}>Sedir Kafe</h1>
+      <main style={{flexGrow:1}}>{children}</main>
     <Footer />
     </div>
 }
