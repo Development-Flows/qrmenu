@@ -2,7 +2,7 @@ import axios from "axios";
 import { getCookie } from 'cookies-next'
 
 function setupAxios() {
-	const baseUrl = "http://localhost:4000";
+	const baseUrl = "https://qr-menu-service.fly.dev/";
 
 	axios.interceptors.request.use((config) => {
 		const accessToken = getCookie("AccessToken")

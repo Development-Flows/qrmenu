@@ -34,7 +34,7 @@ const Login: React.FC = () => {
     setLoading(true)
 
     const { status: httpStatus, data } = await axios.post(
-      'http://localhost:4000/personal/login',
+      'https://qr-menu-service.fly.dev/personal/login',
       {
         email: values.username,
         password: values.password,
