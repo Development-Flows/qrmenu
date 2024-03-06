@@ -6,9 +6,11 @@ function setupAxios() {
 
 	axios.interceptors.request.use((config) => {
 		const accessToken = getCookie("AccessToken")
+		const memberFirmId = getCookie("Firmid")
 		config.baseURL = baseUrl;
 		if (accessToken) {
 			config.headers.Authorization = `Bearer ${accessToken}`;
+			config.headers.firmId = memberFirmId ?? ''
 		}
 		return config;
 	});

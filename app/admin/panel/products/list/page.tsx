@@ -1,297 +1,323 @@
 'use client'
-import React, { useEffect, useState, useRef } from 'react'
+import React, {useEffect, useRef, useState,} from 'react'
+import * as Yup from "yup";
 import {
-  Button,
-  Col,
-  Drawer,
-  Form,
-  Input,
-  Row,
-  Select,
-  Space,
-  Table,
-  message,
+    Button,
+    Drawer,
+    Input,
+    Select,
+    Space,
+    Table,
+    message, InputNumber, Checkbox,
 } from 'antd'
 import Axios from 'axios'
-import { ColumnsType } from 'antd/es/table'
-import { IGetProducts, IProduct, IRemoveProductRes } from '../types'
-import { FilterDropdownProps } from 'antd/es/table/interface'
-const { Option } = Select
+import {ColumnsType} from 'antd/es/table'
+import {IGetProducts, IMenu, IProduct, IRemoveProductRes, IUpdateProduct} from '../types'
+import {FilterDropdownProps} from 'antd/es/table/interface'
+import {useFormik} from "formik";
+import style from './page.module.scss'
 
 const ProductList = () => {
-  const [products, setProducts] = useState<any[]>([])
-  const [loading, setLoading] = useState<boolean>(false)
-  const [loadingRemoveProduct, setLoadingRemoveProduct] =
-    useState<boolean>(false)
-  const [drawerIsOpen, setDrawerIsOpen] = useState(false)
-  const [drawerConfig, setDrawerConfig] = useState<null | IProduct>(null)
+    const [products, setProducts] = useState<IProduct[]>([])
+    const [loading, setLoading] = useState<boolean>(false)
+    const [loadingRemoveProduct, setLoadingRemoveProduct] =
+        useState<boolean>(false)
+    const [drawerIsOpen, setDrawerIsOpen] = useState(false)
+    const [menuList, setMenuList] = useState<IMenu[]>([])
 
-  async function fetchProducts() {
-    setLoading(true)
-    const result: IGetProducts = await Axios.get(`/products/getAll`)
-    setLoading(false)
-    if (result.status) {
-      setProducts(result.data)
-    } else {
-      //message
+    async function fetchProducts() {
+        setLoading(true)
+        const result: IGetProducts = await Axios.get(`/products/getAll`)
+        setLoading(false)
+        if (result.status) {
+            setProducts(result.data)
+        } else {
+            messageApi.open({type: 'error', content: 'result status yok!'})
+        }
     }
-  }
 
-  useEffect(() => {
-    fetchProducts()
-  }, [])
+    async function fetchMenuList() {
+        const result = await Axios.get(`/menu/getAll`)
+        if (result.status) {
+            setMenuList(result.data)
+        }
+    }
 
-  const handleSearch = (confirm: FilterDropdownProps['confirm']) => {
-    confirm()
-  }
+    async function productUpdateQueryHandler(productParams: IUpdateProduct) {
+        const result = await Axios.post(`/products/update/${productParams.productId}`, productParams)
+        if (result.status) {
+            return messageApi.open({type: 'success', content: 'Ürün Güncelleme Başarılı'})
+        }
+        return messageApi.open({type: 'success', content: 'Ürün Güncelleme Başarılı'})
+    }
 
-  async function removeProductHandler(id: string) {
-    setLoadingRemoveProduct(true)
-    const result: IRemoveProductRes = await Axios.delete('/products/delete', {
-      data: { productId: id },
-    })
-    if (!result.status)
-      return messageApi.open({ type: 'error', content: 'Ürün silme başarısız' })
-    setProducts((prevData) => prevData.filter((x) => x._id !== id))
-    setLoadingRemoveProduct(false)
-  }
+    useEffect(() => {
+        fetchProducts()
+        fetchMenuList()
+    }, [])
 
-  async function productUpdateDrawerHandler(id: string) {
-    setDrawerIsOpen(true)
-    setDrawerConfig(products.find((x) => x._id === id) ?? null)
-  }
+    const handleSearch = (confirm: FilterDropdownProps['confirm']) => {
+        confirm()
+    }
 
-  async function productUpdateHandler(a) {
-    console.log('productUpdateHandler func', a)
-  }
+    async function removeProductHandler(id: string) {
+        setLoadingRemoveProduct(true)
+        const result: IRemoveProductRes = await Axios.delete('/products/delete', {
+            data: {productId: id},
+        })
+        if (!result.status)
+            return messageApi.open({type: 'error', content: 'Ürün silme başarısız'})
+        setProducts((prevData) => prevData.filter((x) => x._id !== id))
+        setLoadingRemoveProduct(false)
+    }
 
-  const [messageApi, contextHolder] = message.useMessage()
+    async function productUpdateDrawerHandler(id: string) {
+        const getProductDetail = products.find((x) => x._id === id) ?? null
+        if (getProductDetail) {
+            setDrawerIsOpen(true)
+            await productFormik.setValues({
+                name: getProductDetail.name,
+                description: getProductDetail.description,
+                isActive: getProductDetail.isActive,
+                menuIds: getProductDetail.menuIds,
+                priceSale: getProductDetail.priceSale,
+                productId: getProductDetail._id
+            })
+        } else {
+            messageApi.open({
+                type: 'error',
+                content: 'Bir Hata Oluştu',
+            })
+        }
+    }
 
-  const handleReset = (clearFilters: () => void) => {
-    clearFilters()
-  }
+    async function productUpdateHandler(productDetail: IUpdateProduct) {
+        console.log('productUpdateHandler func', productDetail)
+        productUpdateQueryHandler(productDetail)
+        setDrawerIsOpen(false);
+    }
 
-  const columns: ColumnsType<IProduct> = [
-    {
-      title: 'Ürün Id',
-      key: '_id',
-      dataIndex: '_id',
-    },
-    {
-      title: 'Ürün Adı',
-      key: 'name',
-      dataIndex: 'name',
-      filterDropdown: ({
-        setSelectedKeys,
-        selectedKeys,
-        confirm,
-        clearFilters,
-        close,
-      }) => (
-        <div style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
-          <Input
-            placeholder={`Ürün ismi ara`}
-            value={selectedKeys[0]}
-            onChange={(e) =>
-              setSelectedKeys(e.target.value ? [e.target.value] : [])
-            }
-            onPressEnter={() => handleSearch(confirm)}
-            style={{ marginBottom: 8, display: 'block' }}
-          />
-          <Space>
-            <Button
-              type="primary"
-              onClick={() => handleSearch(confirm)}
-              size="small"
-              style={{ width: 90 }}
+    const [messageApi, contextHolder] = message.useMessage()
+
+    const handleReset = (clearFilters: () => void) => {
+        clearFilters()
+    }
+
+    const columns: ColumnsType<IProduct> = [
+        {
+            title: 'Ürün Id',
+            key: '_id',
+            dataIndex: '_id',
+        },
+        {
+            title: 'Ürün Adı',
+            key: 'name',
+            dataIndex: 'name',
+            filterDropdown: ({
+                                 setSelectedKeys,
+                                 selectedKeys,
+                                 confirm,
+                                 clearFilters,
+                                 close,
+                             }) => (
+                <div style={{padding: 8}} onKeyDown={(e) => e.stopPropagation()}>
+                    <Input
+                        placeholder={`Ürün ismi ara`}
+                        value={selectedKeys[0]}
+                        onChange={(e) =>
+                            setSelectedKeys(e.target.value ? [e.target.value] : [])
+                        }
+                        onPressEnter={() => handleSearch(confirm)}
+                        style={{marginBottom: 8, display: 'block'}}
+                    />
+                    <Space>
+                        <Button
+                            type="primary"
+                            onClick={() => handleSearch(confirm)}
+                            size="small"
+                            style={{width: 90}}
+                        >
+                            Search
+                        </Button>
+                        <Button
+                            onClick={() => clearFilters && handleReset(clearFilters)}
+                            size="small"
+                            style={{width: 90}}
+                        >
+                            Reset
+                        </Button>
+                        <Button
+                            type="link"
+                            size="small"
+                            onClick={() => {
+                                confirm({closeDropdown: false})
+                            }}
+                        >
+                            Filter
+                        </Button>
+                        <Button
+                            type="link"
+                            size="small"
+                            onClick={() => {
+                                close()
+                            }}
+                        >
+                            close
+                        </Button>
+                    </Space>
+                </div>
+            ),
+            onFilter: (value, record) => {
+                return record['name']
+                    .toString()
+                    .toLowerCase()
+                    .includes((value as string).toLowerCase())
+            },
+        },
+        {
+            title: 'Stok',
+            key: 'stock',
+            dataIndex: 'stock',
+        },
+        {
+            title: 'Satış Fiyatı',
+            key: 'priceSale',
+            dataIndex: 'priceSale',
+        },
+        {
+            title: 'Açıklama',
+            key: 'description',
+            dataIndex: 'description',
+        },
+        {
+            title: '',
+            key: 'buttons',
+            dataIndex: '_id',
+            render: (value) => {
+                return (
+                    <Button
+                        loading={loadingRemoveProduct}
+                        onClick={() => productUpdateDrawerHandler(value)}
+                    >
+                        Düzenle
+                    </Button>
+                )
+            },
+        },
+        //{
+        //  title: '',
+        //  key: 'buttons',
+        //  dataIndex: '_id',
+        //  render: (value) => {
+        //    return (
+        //      <Button
+        //        loading={loadingRemoveProduct}
+        //        onClick={() => removeProductHandler(value)}
+        //      >
+        //        Sil
+        //      </Button>
+        //    )
+        //  },
+        //},
+    ]
+
+    const firmInitialValue = {
+        name: "",
+        priceSale: 0,
+        menuIds: [],
+        isActive: true,
+        description: '',
+        productId: ""
+    };
+
+    const productFormik = useFormik({
+        initialValues: firmInitialValue,
+        validateOnChange: true,
+        validationSchema: Yup.object({
+            name: Yup.string().required("Zorunlu Alan"),
+            priceSale: Yup.string().required("Zorunlu Alan")
+        }),
+        onSubmit: (values) => {
+            productFormik.resetForm();
+            productUpdateHandler(values);
+        }
+    });
+
+    const formRef = useRef(null);
+
+    function formButtonSubmitHandler(e) {
+        e.preventDefault()
+        e.stopPropagation()
+
+        productFormik.handleSubmit()
+    }
+
+
+    return (
+        <div>
+            <Drawer
+                title="Basic Drawer"
+                onClose={() => setDrawerIsOpen(false)}
+                open={drawerIsOpen}
             >
-              Search
-            </Button>
-            <Button
-              onClick={() => clearFilters && handleReset(clearFilters)}
-              size="small"
-              style={{ width: 90 }}
-            >
-              Reset
-            </Button>
-            <Button
-              type="link"
-              size="small"
-              onClick={() => {
-                confirm({ closeDropdown: false })
-              }}
-            >
-              Filter
-            </Button>
-            <Button
-              type="link"
-              size="small"
-              onClick={() => {
-                close()
-              }}
-            >
-              close
-            </Button>
-          </Space>
+                {productFormik.values && menuList && (
+                    <form ref={formRef} className={style.productDetailForm}>
+                        <div className={style.formItem}>
+                            <div className={style.label}>Ürün İsmi</div>
+                            <Input onChange={productFormik.handleChange} value={productFormik.values.name}
+                                   name={"name"}/>
+                        </div>
+
+                        <div className={style.formItem}>
+                            <div className={style.label}>Ürün Fiyat</div>
+                            <InputNumber onChange={(value) => productFormik.setFieldValue("priceSale", value)} min={1}
+                                         value={productFormik.values.priceSale} name={"priceSale"}/>
+                        </div>
+
+                        <div className={style.formItem}>
+                            <div className={style.label}>Bulunduğu Menüler</div>
+                            <Select
+                                mode={'multiple'}
+                                placeholder="Sahip olduğu Menü"
+                                name={"menuIds"}
+                                defaultValue={productFormik.values.menuIds}
+                                onChange={(value: string[] | undefined) => productFormik.setFieldValue("menuIds", value)}
+                            >{menuList.map((menuItem) => <Select.Option
+                                value={menuItem._id}>{menuItem.name}</Select.Option>)}</Select>
+                        </div>
+
+                        <div className={style.formItem}>
+                            <div className={style.label}><Checkbox name={"isActive"}
+                                                                   checked={productFormik.values.isActive}
+                                                                   onChange={(event) => productFormik.setFieldValue("isActive", event.target.checked)}>Aktiflik
+                                Durumu</Checkbox>
+                            </div>
+
+                        </div>
+
+                        <div className={style.formItem}>
+                            <div className={style.label}>Ürün Açıklama</div>
+                            <Input.TextArea
+                                name={"description"}
+                                value={productFormik.values.description}
+                                onChange={(event) => productFormik.setFieldValue("description", event.target.value)}
+                                style={{width: '100%'}}
+                                placeholder="Açıklama girebilirsiniz.."
+                            />
+                        </div>
+
+                        <Button type={'primary'} onClick={formButtonSubmitHandler}>Kaydet</Button>
+
+                    </form>
+                )}
+            </Drawer>
+            <Table
+                loading={loading}
+                columns={columns}
+                dataSource={products}
+                rowKey={'_id'}
+            />
         </div>
-      ),
-      onFilter: (value, record) => {
-        return record['name']
-          .toString()
-          .toLowerCase()
-          .includes((value as string).toLowerCase())
-      },
-    },
-    {
-      title: 'Stok',
-      key: 'stock',
-      dataIndex: 'stock',
-    },
-    {
-      title: 'Satış Fiyatı',
-      key: 'priceSale',
-      dataIndex: 'priceSale',
-    },
-    {
-      title: 'Açıklama',
-      key: 'description',
-      dataIndex: 'description',
-    },
-    {
-      title: '',
-      key: 'buttons',
-      dataIndex: '_id',
-      render: (value) => {
-        return (
-          <Button
-            loading={loadingRemoveProduct}
-            onClick={() => productUpdateDrawerHandler(value)}
-          >
-            Düzenle
-          </Button>
-        )
-      },
-    },
-    //{
-    //  title: '',
-    //  key: 'buttons',
-    //  dataIndex: '_id',
-    //  render: (value) => {
-    //    return (
-    //      <Button
-    //        loading={loadingRemoveProduct}
-    //        onClick={() => removeProductHandler(value)}
-    //      >
-    //        Sil
-    //      </Button>
-    //    )
-    //  },
-    //},
-  ]
-
-  return (
-    <div>
-      <Drawer
-        title="Basic Drawer"
-        onClose={() => setDrawerIsOpen(false)}
-        open={drawerIsOpen}
-      >
-        <pre>{JSON.stringify(drawerConfig, null, 2)}</pre>
-        {drawerConfig && (
-          <Form
-            layout="vertical"
-            hideRequiredMark
-            onFinish={productUpdateHandler}
-          >
-            <Row gutter={16}>
-              <Col span={12}>
-                <Form.Item
-                  name="name"
-                  initialValue={drawerConfig.name}
-                  label="Name"
-                  rules={[
-                    { required: true, message: 'Please enter user name' },
-                  ]}
-                >
-                  <Input />
-                </Form.Item>
-              </Col>
-              <Col span={12}>
-                <Form.Item
-                  name="priceSale"
-                  label="Ürün Fiyatı"
-                  initialValue={drawerConfig.priceSale}
-                  rules={[{ required: true, message: 'Please enter url' }]}
-                >
-                  <Input style={{ width: '100%' }} />
-                </Form.Item>
-              </Col>
-            </Row>
-            <Row gutter={16}>
-              <Col span={12}>
-                <Form.Item
-                  name="menuIds"
-                  label="Bulunduğu Menüler"
-                  initialValue={drawerConfig.menuIds}
-                >
-                  <Select
-                    mode="multiple"
-                    style={{ width: '100%' }}
-                    placeholder="Sahip olduğu menüler"
-                  >
-                    {drawerConfig.menuIds.map((menuId) => (
-                      <Option key={menuId} value={menuId}>
-                        {menuId}
-                      </Option>
-                    ))}
-                  </Select>
-                </Form.Item>
-              </Col>
-              <Col span={12}>
-                <Form.Item
-                  name="menuIds"
-                  label="Bulunduğu Menüler"
-                  initialValue={drawerConfig.isActive}
-                >
-                  <Select
-                    style={{ width: '100%' }}
-                    placeholder="Aktiflik Durumu"
-                    value={drawerConfig.isActive}
-                  >
-                    <Option key={1} value={true}>
-                      Açık
-                    </Option>
-                    <Option key={2} value={false}>
-                      Kapalı
-                    </Option>
-                  </Select>
-                </Form.Item>
-              </Col>
-            </Row>
-            <Row gutter={16}>
-              <Col span={24}>
-                <Form.Item
-                  name="description"
-                  label="Açıklama alanı"
-                  initialValue={drawerConfig.description}
-                >
-                  <Input.TextArea
-                    rows={2}
-                    placeholder="Açıklama girebilirsiniz.."
-                  />
-                </Form.Item>
-              </Col>
-            </Row>
-          </Form>
-        )}
-      </Drawer>
-      <Table
-        loading={loading}
-        columns={columns}
-        dataSource={products}
-        rowKey={'_id'}
-      />
-    </div>
-  )
+    )
 }
 export default ProductList
