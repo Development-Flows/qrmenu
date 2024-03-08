@@ -6,18 +6,19 @@ import Content from "@/components/pages/menu/Content";
 const Menu: NextPage = async ({}) => {
     const categories: Response_getAllWithProduct["data"] = [];
 
-    await fetch("https://qr-menu-service.fly.dev/menu/getAllWithProduct", {
+    await fetch("http://localhost:4000/menu/getAllWithProduct", {
         next: {revalidate: 60 * 15},
+        headers:{firmid:"64cc09afce2b0ab519ff414f"}
     })
         .then(async (res) => await res.json())
         .then((res: Response_getAllWithProduct) => res.data)
         .then((res: Response_getAllWithProduct["data"]) => {
-            console.log("ress",res)
             categories.push(...res);
         })
         .catch((err) => {
             console.log("err", err);
         });
+
 
     return (
         <div>
