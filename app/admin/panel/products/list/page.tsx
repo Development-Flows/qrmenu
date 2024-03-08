@@ -224,7 +224,7 @@ const ProductList = () => {
     const firmInitialValue = {
         name: "",
         priceSale: 0,
-        menuIds: [],
+        menuIds: [] as string[],
         isActive: true,
         description: '',
         productId: ""
@@ -245,7 +245,7 @@ const ProductList = () => {
 
     const formRef = useRef(null);
 
-    function formButtonSubmitHandler(e) {
+    function formButtonSubmitHandler(e:any) {
         e.preventDefault()
         e.stopPropagation()
 
@@ -279,10 +279,9 @@ const ProductList = () => {
                             <Select
                                 mode={'multiple'}
                                 placeholder="Sahip olduğu Menü"
-                                name={"menuIds"}
                                 defaultValue={productFormik.values.menuIds}
                                 onChange={(value: string[] | undefined) => productFormik.setFieldValue("menuIds", value)}
-                            >{menuList.map((menuItem) => <Select.Option
+                            >{menuList.map((menuItem) => <Select.Option key={menuItem._id}
                                 value={menuItem._id}>{menuItem.name}</Select.Option>)}</Select>
                         </div>
 
