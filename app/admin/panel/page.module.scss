@@ -1,0 +1,13 @@
+.content {
+    width: calc(100% - 256px);
+    margin-left: auto;
+    padding:15px 20px
+  }
+  
+  .menuContent {
+    position: absolute;
+    left: 0;
+    height: 100vh;
+    max-width: 256px;
+    width: 256px;
+  }
