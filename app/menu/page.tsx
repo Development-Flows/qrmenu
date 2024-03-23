@@ -6,7 +6,7 @@ import Content from "@/components/pages/menu/Content";
 const Menu: NextPage = async ({}) => {
     const categories: Response_getAllWithProduct["data"] = [];
 
-    await fetch("http://localhost:4000/menu/getAllWithProduct", {
+    await fetch("https://qr-menu-service.fly.dev/menu/getAllWithProduct", {
         next: {revalidate: 60 * 15},
         headers:{firmid:"64cc09afce2b0ab519ff414f"}
     })
