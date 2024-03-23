@@ -6,7 +6,7 @@ function setupAxios() {
 
 	axios.interceptors.request.use((config) => {
 		const accessToken = getCookie("AccessToken")
-		const memberFirmId = getCookie("Firmid")
+		const memberFirmId = getCookie("firmId")
 		config.baseURL = baseUrl;
 		if (accessToken) {
 			config.headers.Authorization = `Bearer ${accessToken}`;
@@ -17,7 +17,7 @@ function setupAxios() {
 
 	axios.interceptors.response.use(
 		(response) => {
-			return response.data;
+			return response.data
 		},
 		(err) => {
 			if (err?.response?.status === 401) {
