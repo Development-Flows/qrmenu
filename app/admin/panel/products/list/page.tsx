@@ -24,6 +24,8 @@ const ProductList = () => {
         useState<boolean>(false)
     const [drawerIsOpen, setDrawerIsOpen] = useState(false)
     const [menuList, setMenuList] = useState<IMenu[]>([])
+    const [messageApi, contextHolder] = message.useMessage()
+
 
     async function fetchProducts() {
         setLoading(true)
@@ -46,7 +48,10 @@ const ProductList = () => {
     async function productUpdateQueryHandler(productParams: IUpdateProduct) {
         const result = await Axios.post(`/products/update/${productParams.productId}`, productParams)
         if (result.status) {
-            return messageApi.open({type: 'success', content: 'Ürün Güncelleme Başarılı'})
+            messageApi.open({type: 'success', content: 'Ürün Güncelleme Başarılı'})
+            await fetchProducts()
+            return
+
         }
         return messageApi.open({type: 'success', content: 'Ürün Güncelleme Başarılı'})
     }
@@ -96,8 +101,6 @@ const ProductList = () => {
         productUpdateQueryHandler(productDetail)
         setDrawerIsOpen(false);
     }
-
-    const [messageApi, contextHolder] = message.useMessage()
 
     const handleReset = (clearFilters: () => void) => {
         clearFilters()
@@ -255,6 +258,7 @@ const ProductList = () => {
 
     return (
         <div>
+            {contextHolder}
             <Drawer
                 title="Basic Drawer"
                 onClose={() => setDrawerIsOpen(false)}
