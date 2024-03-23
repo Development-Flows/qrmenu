@@ -17,7 +17,11 @@ function setupAxios() {
 
 	axios.interceptors.response.use(
 		(response) => {
-			return response.data
+			if(response?.config && response?.statusText!==undefined){
+				return Promise.resolve(response.data);
+			}else{
+				return Promise.resolve(response);
+			}
 		},
 		(err) => {
 			if (err?.response?.status === 401) {
